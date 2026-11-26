@@ -88,6 +88,7 @@ function setManualLandscape(active: boolean) {
   const height = window.visualViewport?.height ?? window.innerHeight;
   manualLandscape = active && width <= height;
   document.querySelector('.page')?.classList.toggle('manual-landscape', manualLandscape);
+  dialog.classList.toggle('manual-landscape', manualLandscape && dialog.classList.contains('photo-mode'));
   const button = document.querySelector<HTMLButtonElement>('[data-act="orientation"]')!;
   const label = manualLandscape ? '恢复竖屏布局' : '旋转为横屏布局';
   button.innerHTML = `<span class="sound-glyph">${icon(manualLandscape ? 'portrait' : 'landscape', 16)}</span>`;
@@ -189,7 +190,11 @@ async function go(target: number) {
   pendingDestination=null;
   if (opening) setOpening(false);
   sound.visit();
-  if (target === total) sound.summit();
+  if (target === total) {
+    sound.summit();
+    const sunriseImage = new Image();
+    sunriseImage.src = base + photoCredits.yuhuangSunrise!.file;
+  }
   const stop=stops[target];
   if (stop) {
     sound.prepare(stop.key);
@@ -244,6 +249,7 @@ function showDialog(html: string, variant: 'photo' | 'default' = 'default') {
   dialogTrigger=document.activeElement instanceof HTMLElement ? document.activeElement : null;
   el('dialog-body').innerHTML=html;
   dialog.classList.toggle('photo-mode', variant === 'photo');
+  dialog.classList.toggle('manual-landscape', variant === 'photo' && manualLandscape);
   dialog.querySelector('.dialog')?.classList.toggle('photo-dialog', variant === 'photo');
   dialog.hidden=false;
   document.body.classList.add('no-scroll');
@@ -252,6 +258,7 @@ function showDialog(html: string, variant: 'photo' | 'default' = 'default') {
 function closeDialog(allowFinish = true) {
   dialog.hidden=true;
   dialog.classList.remove('photo-mode');
+  dialog.classList.remove('manual-landscape');
   dialog.querySelector('.dialog')?.classList.remove('photo-dialog');
   document.body.classList.remove('no-scroll');
   dialogTrigger?.focus();
@@ -265,8 +272,10 @@ function credits() {
   const items=stops.map(s=>{
     const p=photoCredits[s.key]!;
     return `<li><b>${s.name}</b><span><a href="${p.source}" target="_blank" rel="noopener noreferrer">${p.credit}</a> · <a href="${p.licenseUrl}" target="_blank" rel="noopener noreferrer">${p.license}</a></span></li>`;
-  }).join('');
-  showDialog(`<h2 id="dialog-title">图文来源</h2><h3>实景摄影</h3><p>照片来自维基共享资源，已缩放、转换为 WebP 并按窗口裁切。</p><ul class="source-list">${items}</ul><h3>路线与景点</h3><p><a href="https://whlyj.taian.gov.cn/art/2023/9/27/art_334292_10298869.html" target="_blank" rel="noopener noreferrer">泰安市文化和旅游局《登泰山旅游攻略》</a><br><a href="https://tsgw.taian.gov.cn/art/2021/6/16/art_162237_10286435.html" target="_blank" rel="noopener noreferrer">泰山风景名胜区管理委员会 · 泰山石刻</a></p><h3>山水与声音</h3><p>山水长卷、路线图和器乐曲《岱岳》为本游记原创。普通话讲解采用语音合成，标题使用马善政毛笔楷书。</p>`);
+  });
+  const sunrise=photoCredits.yuhuangSunrise!;
+  items.push(`<li><b>玉皇顶云海日出</b><span><a href="${sunrise.source}" target="_blank" rel="noopener noreferrer">${sunrise.credit}</a> · <a href="${sunrise.licenseUrl}" target="_blank" rel="noopener noreferrer">${sunrise.license}</a></span></li>`);
+  showDialog(`<h2 id="dialog-title">图文来源</h2><h3>实景摄影</h3><p>照片来自维基共享资源，已按页面展示尺寸优化。</p><ul class="source-list">${items.join('')}</ul><h3>路线与景点</h3><p><a href="https://whlyj.taian.gov.cn/art/2023/9/27/art_334292_10298869.html" target="_blank" rel="noopener noreferrer">泰安市文化和旅游局《登泰山旅游攻略》</a><br><a href="https://tsgw.taian.gov.cn/art/2021/6/16/art_162237_10286435.html" target="_blank" rel="noopener noreferrer">泰山风景名胜区管理委员会 · 泰山石刻</a></p><h3>山水与声音</h3><p>山水长卷、路线图和器乐曲《岱岳》为本游记原创。普通话讲解采用语音合成，标题使用马善政毛笔楷书。</p>`);
 }
 app.addEventListener('click', event=>{
   if (!(event.target instanceof Element)) return;
@@ -310,9 +319,11 @@ app.addEventListener('click', event=>{
     case 'credits':credits();break;
     case 'photo': {
       const stop=stops[current];
-      if (!stop || moving) break;
-      const photo=photoCredits[stop.key]!;
-      showDialog(`<h2 id="dialog-title" class="sr">${stop.name}实景大图</h2><figure class="photo-lightbox"><img src="${base}${photo.file}" style="object-position:${photo.position ?? '50% 50%'}" alt="${photo.alt}"><figcaption>${stop.name} · 实景照片</figcaption></figure>`, 'photo');
+      if (moving) break;
+      const photo=current===total ? photoCredits.yuhuangSunrise! : stop && photoCredits[stop.key];
+      if (!photo) break;
+      const subject=stop?.name ?? '玉皇顶云海日出';
+      showDialog(`<h2 id="dialog-title" class="sr">${subject}实景大图</h2><figure class="photo-lightbox"><img src="${base}${photo.file}" style="object-position:${photo.position ?? '50% 50%'}" alt="${photo.alt}"><figcaption>${subject} · 实景照片</figcaption></figure>`, 'photo');
       break;
     }
     case 'script': {

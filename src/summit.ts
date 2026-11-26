@@ -1,4 +1,7 @@
 import './summit.css';
+import { photoCredits } from './photoCredits';
+
+const base = import.meta.env.BASE_URL;
 
 // Load the small local subset during the ascent so the reveal starts in brush lettering.
 document.fonts?.load('1em SummitBrush', '会').catch(() => {});
@@ -30,9 +33,14 @@ const summitSeal = `<svg class="summit-seal" viewBox="0 0 112 112" aria-hidden="
 
 export function summitView(visited: number): string {
   const count = Number.isFinite(visited) ? Math.max(0, Math.min(7, Math.trunc(visited))) : 0;
+  const sunrise = photoCredits.yuhuangSunrise!;
   return `<figure class="summit-poem">
     <blockquote><span>会当凌绝顶，</span><span>一览众山小</span></blockquote>
     <figcaption>杜甫《望岳》</figcaption>
+  </figure>
+  <figure class="summit-sunrise">
+    <button class="summit-photo-button" type="button" data-act="photo" aria-label="查看泰山云海日出大图"><img src="${base}${sunrise.file}" alt="${sunrise.alt}" style="object-position:${sunrise.position}"></button>
+    <figcaption><b>云海日出</b><span>摄影 <a href="${sunrise.source}" target="_blank" rel="noopener noreferrer">${sunrise.credit}</a> · <a href="${sunrise.licenseUrl}" target="_blank" rel="noopener noreferrer">${sunrise.license}</a></span></figcaption>
   </figure>
   <section class="summit-award" aria-labelledby="summit-title">
     <div class="summit-award-head">

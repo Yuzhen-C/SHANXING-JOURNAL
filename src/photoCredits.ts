@@ -80,5 +80,14 @@ export const photoCredits: Record<string, PhotoCredit> = {
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "alt": "玉皇顶院内石栏围住极顶石，背后为灰瓦红墙的门楼",
     "position": "50% 60%"
+  },
+  "yuhuangSunrise": {
+    "file": "photos/yuhuang-sunrise.jpg",
+    "credit": "AlexHe34",
+    "source": "https://commons.wikimedia.org/wiki/File:Sunrise_viewed_from_Mount_Tai.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "alt": "泰山日出，太阳穿过云层，云海与层叠山脊隐约浮现",
+    "position": "56% 36%"
   }
 };

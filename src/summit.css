@@ -14,6 +14,7 @@
   color: #1e4037;
   text-shadow: 0 1px 6px #fff3cff0;
   pointer-events: none;
+  z-index: 2;
 }
 .summit-poem blockquote {
   margin: 0;
@@ -42,6 +43,52 @@
   from { opacity: 0; transform: translateY(.12em); filter: blur(2px); }
   to { opacity: 1; transform: none; filter: none; }
 }
+.summit-sunrise {
+  position: absolute;
+  z-index: 1;
+  top: 12%;
+  right: 5%;
+  width: min(44%, 640px);
+  margin: 0;
+  padding: 7px 7px 32px;
+  border: 1px solid #bba77f;
+  background: #f7efdceF;
+  box-shadow: 0 10px 30px #132e2c45, inset 0 0 0 3px #fff9e9;
+  transform: rotate(1deg);
+  pointer-events: none;
+  animation: summit-sunrise-arrives .85s cubic-bezier(.18,.76,.23,1) 1.2s both;
+}
+.summit-photo-button {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: #304642;
+  cursor: zoom-in;
+  pointer-events: auto;
+}
+.summit-photo-button img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.summit-sunrise figcaption {
+  position: absolute;
+  right: 10px;
+  bottom: 7px;
+  left: 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  color: #334b3e;
+  font: 500 10px/1.4 var(--serif);
+}
+.summit-sunrise figcaption b { font-weight: 600; }
+.summit-sunrise figcaption span { color: #6f735e; font: 10px/1.4 "PingFang SC","Microsoft YaHei",sans-serif; white-space: nowrap; }
+.summit-sunrise figcaption a { color: inherit; text-underline-offset: 2px; pointer-events: auto; }
+@keyframes summit-sunrise-arrives {
+  from { opacity: 0; transform: translateY(13px) rotate(1deg) scale(.97); }
+  to { opacity: 1; transform: rotate(1deg) scale(1); }
+}
 .summit-award {
   --summit-ink: #25483e;
   --summit-gold: #ae8758;
@@ -59,6 +106,7 @@
   pointer-events: auto;
   cursor: default;
   text-align: left;
+  z-index: 3;
   animation: award-arrives .75s cubic-bezier(.17,.75,.21,1) 2.55s both;
 }
 
@@ -151,6 +199,9 @@
 }
 @media (max-width: 640px) {
   .summit-poem blockquote { font-size: clamp(31px, 9.2vw, 48px); }
+  .summit-sunrise { top: 29%; left: 9%; right: auto; width: 82%; max-width: 440px; }
+  .summit-sunrise figcaption { right: 9px; left: 9px; }
+  .summit-sunrise figcaption span { font-size: 9px; }
   .summit-award {
     left: max(14px, env(safe-area-inset-left));
     right: max(14px, env(safe-area-inset-right));
@@ -171,6 +222,7 @@
   .summit-poem { top: max(10%, calc(env(safe-area-inset-top) + 52px)); }
   .summit-poem blockquote { font-size: clamp(27px, 8.2vw, 39px); }
   .summit-poem figcaption { margin-top: .45em; }
+  .summit-sunrise { top: 22%; left: 15%; width: 70%; }
   .summit-award { padding: 13px 16px 11px; }
   .summit-seal { width: 50px; }
   .summit-award-head { gap: 9px; }
@@ -182,10 +234,11 @@
 }
 @media (max-height: 600px) and (orientation: landscape) {
   .summit-poem {
-    left: max(6vw, env(safe-area-inset-left));
-    top: max(20%, calc(env(safe-area-inset-top) + 58px));
+    left: max(5vw, env(safe-area-inset-left));
+    top: max(7%, calc(env(safe-area-inset-top) + 12px));
   }
-  .summit-poem blockquote { font-size: clamp(25px, min(6vw, 9vh), 48px); }
+  .summit-poem blockquote { font-size: clamp(23px, min(5vw, 8vh), 31px); }
+  .summit-sunrise { top: 35%; left: 4%; right: auto; width: min(36%, 300px); }
   .summit-award {
     left: auto;
     right: max(16px, env(safe-area-inset-right));
@@ -197,14 +250,32 @@
   .summit-restart { margin-top: 7px; }
 }
 @media (max-height: 500px) and (max-width: 900px) and (orientation: landscape) {
-  .summit-poem { top: max(16%, calc(env(safe-area-inset-top) + 46px)); }
-  .summit-poem blockquote { font-size: clamp(23px, min(5.2vw, 8vh), 39px); }
+  .summit-poem { top: max(7%, calc(env(safe-area-inset-top) + 10px)); }
+  .summit-poem blockquote { font-size: clamp(22px, min(4.8vw, 7vh), 28px); }
+  .summit-sunrise { top: 34%; width: min(34%, 280px); }
   .summit-award { padding: 11px 14px; }
   .summit-award h2 { font-size: clamp(23px, 4vw, 30px); }
   .summit-stats { margin-top: 7px; padding-top: 6px; }
   .summit-restart { min-height: 37px; margin-top: 6px; }
 }
+@media (max-width: 600px) and (orientation: portrait) {
+  .page.manual-landscape .summit-poem { top: 7%; left: 5%; }
+  .page.manual-landscape .summit-poem blockquote { font-size: clamp(22px, 6vw, 29px); }
+  .page.manual-landscape .summit-poem figcaption { margin-top: .35em; }
+  .page.manual-landscape .summit-sunrise { top: 35%; left: 4%; right: auto; width: min(36%, 300px); }
+  .page.manual-landscape .summit-award { left: auto; right: 4%; bottom: var(--summit-bottom); width: min(42%, 354px); max-width: none; margin: 0; padding: 12px 14px 10px; }
+  .page.manual-landscape .summit-seal { width: 50px; }
+  .page.manual-landscape .summit-award-head { gap: 8px; }
+  .page.manual-landscape .summit-award h2 { font-size: 26px; }
+  .page.manual-landscape .summit-stats { margin-top: 8px; padding-top: 6px; }
+  .page.manual-landscape .summit-stats dd { font-size: 22px; }
+  .page.manual-landscape .summit-restart { min-height: 38px; margin-top: 6px; }
+}
+@media (max-width: 360px) and (orientation: portrait) {
+  .summit-sunrise figcaption { align-items: flex-start; }
+  .summit-sunrise figcaption span { max-width: 72%; white-space: normal; text-align: right; font-size: 8px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .summit-poem blockquote span, .summit-poem figcaption,
-  .summit-award, .summit-seal { animation: none; }
+  .summit-sunrise, .summit-award, .summit-seal { animation: none; }
 }
