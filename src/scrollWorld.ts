@@ -730,9 +730,11 @@ export function createScrollWorld(host:HTMLElement): {travel(to:number, options?
 
   function resize(){
     if(disposed)return;
-    const bounds=host.getBoundingClientRect();
-    w=Math.max(1,Math.round(bounds.width));h=Math.max(1,Math.round(bounds.height));
-    dockTop=(host.closest('.page')?.querySelector('.route')?.getBoundingClientRect().top??bounds.bottom)-bounds.top;
+    w=Math.max(1,host.clientWidth);h=Math.max(1,host.clientHeight);
+    const page=host.closest('.page');
+    const stage=host.closest<HTMLElement>('.painting');
+    const route=page?.querySelector<HTMLElement>('.route');
+    dockTop=(route?.offsetTop??h)-(stage?.offsetTop??0);
     dpr=Math.min(1.75,window.devicePixelRatio||1,Math.sqrt(2100000/(w*h)));
     base=limit(h/698,.52,1.58);wide=limit((w/h-.72)/.78,0,1);
     canvas.width=Math.max(1,Math.round(w*dpr));canvas.height=Math.max(1,Math.round(h*dpr));
