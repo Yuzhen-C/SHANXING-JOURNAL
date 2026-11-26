@@ -13,6 +13,8 @@ const paths: Record<string, string> = {
   close: '<path d="m6 6 12 12m0-12L6 18"/>',
   replay: '<path d="M3 10a9 9 0 1 1 1 7m-1-13v6h6"/>',
   play: '<path d="m7 4 13 8-13 8z"/>',
+  landscape: '<rect x="3" y="7" width="18" height="10" rx="1.5"/><path d="M8 17v2m8-2v2"/>',
+  portrait: '<rect x="7" y="3" width="10" height="18" rx="1.5"/><path d="M10 17h4"/>',
 };
 
 export function icon(name: string, size = 20) {

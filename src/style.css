@@ -87,6 +87,15 @@ footer{border-top:1px solid #d7d3bf;justify-content:space-between;color:#707865;
 /* The painting owns the viewport. Controls float inside its safe area. */
 html,body,#app{width:100%;height:100%;overflow:hidden}
 .page{position:relative;isolation:isolate;width:100%;height:100%;height:var(--visual-viewport-height,100dvh);min-height:0;overflow:hidden;--edge-x:clamp(14px,3.25vw,65px);--dock-h:78px;--dock-bottom:max(14px,env(safe-area-inset-bottom));--above-dock:calc(var(--dock-bottom) + var(--dock-h) + 16px)}
+.page.manual-landscape{position:fixed;top:0;left:var(--visual-viewport-width,100vw);width:var(--visual-viewport-height,100dvh);height:var(--visual-viewport-width,100vw);transform:rotate(90deg);transform-origin:top left;--dock-h:45px;--dock-bottom:max(8px,env(safe-area-inset-left));--above-dock:calc(var(--dock-bottom) + var(--dock-h) + 10px)}
+.page.orientation-intro-active .mast.shell{z-index:12}
+.orientation-intro{position:absolute;z-index:9;inset:0;background:#14231fbd;color:#fff6df;backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px)}
+.orientation-intro-card{position:absolute;top:calc(env(safe-area-inset-top) + 63px);right:max(62px,calc(env(safe-area-inset-right) + 54px));width:min(245px,calc(100% - 112px));padding:13px 15px 11px;border:1px solid #dfc98e;background:#254638;box-shadow:0 8px 24px #0005, inset 0 0 0 3px #ffffff14;border-radius:3px;animation:hint-arrives .32s ease-out both}
+.orientation-intro-card:before{content:"";position:absolute;top:-6px;right:12px;width:10px;height:10px;transform:rotate(45deg);background:#254638;border-top:1px solid #dfc98e;border-left:1px solid #dfc98e}
+.orientation-intro-card h2{margin:0 0 5px;font:600 15px/1.4 var(--serif);letter-spacing:.04em}
+.orientation-intro-card p{margin:0;color:#f0e5c8;font:12px/1.6 var(--serif)}
+.orientation-intro-card button{margin-top:8px;padding:5px 0;color:#e8ce93;font-size:11px;text-underline-offset:3px;text-decoration:underline}
+.orientation-control.is-spotlit .sound-glyph{position:relative;z-index:13;width:32px;height:32px;border-color:#f1d38a;background:#fff5d8;color:#244536;box-shadow:0 0 0 5px #f1d38a56,0 0 22px 8px #f9df9fbd;animation:spotlight-pulse 1.4s ease-in-out infinite alternate}
 .page main.shell{position:absolute;inset:0;width:100%;margin:0}
 .painting{position:absolute;inset:0;width:100%;height:100%;min-height:0;max-height:none;border:0;border-radius:0;box-shadow:none;--summit-bottom:var(--above-dock)}
 .painting:after{display:none}
@@ -94,8 +103,9 @@ html,body,#app{width:100%;height:100%;overflow:hidden}
 .mast button{pointer-events:auto}.brand{gap:9px;background:transparent}.brand-mark{width:32px;height:31px}.brand-name{font-size:17px;color:#234b37;text-shadow:0 1px 5px #fff6db}.brand-name small{font-size:6px}
 .audio-controls{gap:0}.audio-controls button{padding:0;border:0;background:transparent;border-radius:50%;width:44px;height:44px;min-height:44px;justify-content:center}
 .sound-glyph{position:relative;display:grid;place-items:center;width:29px;height:29px;border:1px solid #74846988;border-radius:50%;background:#fbf5dece;box-shadow:0 1px 5px #203d2920;color:#365541}
-.sound-glyph svg{width:15px;height:15px}.audio-controls button[aria-pressed=false] .sound-glyph{background:#eee9d3bd;color:#687363}
-.audio-controls button[aria-pressed=false] .sound-glyph:after{content:"";position:absolute;inset:auto;width:19px;height:1.5px;background:#864e3d;transform:rotate(-45deg);box-shadow:0 1px #f2ead1}
+.sound-glyph svg{width:15px;height:15px}.audio-controls button.sound-control[aria-pressed=false] .sound-glyph{background:#eee9d3bd;color:#687363}
+.audio-controls button.sound-control[aria-pressed=false] .sound-glyph:after{content:"";position:absolute;inset:auto;width:19px;height:1.5px;background:#864e3d;transform:rotate(-45deg);box-shadow:0 1px #f2ead1}
+.orientation-control{display:none}
 .cover-copy{left:max(calc(var(--edge-x) + 9px),env(safe-area-inset-left));top:max(15vh,calc(env(safe-area-inset-top) + 72px))}
 .cover-desc{max-width:min(340px,80vw);text-wrap:pretty;color:#344738}
 .cover-actions{display:flex;align-items:center}.cover-actions .primary:disabled{background:#73583c;border-color:#796046;gap:8px}
@@ -121,4 +131,20 @@ html,body,#app{width:100%;height:100%;overflow:hidden}
 @media(max-height:600px) and (min-width:601px) and (min-aspect-ratio:123/100) and (orientation:landscape){
   .field-note{width:min(clamp(330px,33vw,454px),calc(100% - 2 * var(--edge-x)))}
 }
+@media(max-width:600px) and (orientation:portrait){
+  .orientation-control{display:grid;place-items:center}
+  .page.manual-landscape .mast.shell{left:max(var(--edge-x),env(safe-area-inset-top));right:max(var(--edge-x),env(safe-area-inset-bottom));top:max(11px,env(safe-area-inset-right))}
+  .page.manual-landscape .route{width:min(660px,88%);padding:4px 8px}
+  .page.manual-landscape .route-head{display:none}
+  .page.manual-landscape .milestone{min-height:34px}
+  .page.manual-landscape .cover-copy{top:56px}
+  .page.manual-landscape .cover-copy .kicker{margin-bottom:3px}
+  .page.manual-landscape .title-line h1{font-size:48px}
+  .page.manual-landscape .cover-desc{margin-bottom:6px}
+  .page.manual-landscape .brand-name small{display:none}
+  .page.manual-landscape .field-note{left:max(16px,env(safe-area-inset-top));width:min(43%,354px)}
+  .page.manual-landscape .motion-note{bottom:55px}
+}
+@keyframes hint-arrives{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+@keyframes spotlight-pulse{from{box-shadow:0 0 0 4px #f1d38a45,0 0 13px 4px #f9df9f70}to{box-shadow:0 0 0 7px #f1d38a65,0 0 25px 10px #f9df9fbd}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

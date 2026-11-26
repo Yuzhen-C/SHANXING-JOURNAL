@@ -30,11 +30,17 @@ let pendingDestination: number | null = null;
 let dialogTrigger: HTMLElement | null = null;
 let noticeTimer = 0;
 const inkStrip = '<i class="gold-line" aria-hidden="true"></i>';
+let manualLandscape = false;
 
 function syncViewportHeight() {
   requestAnimationFrame(() => {
-    const height = window.visualViewport?.height ?? window.innerHeight;
-    document.documentElement.style.setProperty('--visual-viewport-height', `${Math.round(height)}px`);
+    const width = Math.round(window.visualViewport?.width ?? window.innerWidth);
+    const height = Math.round(window.visualViewport?.height ?? window.innerHeight);
+    document.documentElement.style.setProperty('--visual-viewport-width', `${width}px`);
+    document.documentElement.style.setProperty('--visual-viewport-height', `${height}px`);
+    const intro = document.getElementById('orientation-intro');
+    if (width > height && intro && !intro.hidden) dismissOrientationIntro();
+    if (manualLandscape && width > height) setManualLandscape(false);
   });
 }
 
@@ -47,7 +53,7 @@ const worldMark = `<svg viewBox="0 0 46 43" fill="none" aria-hidden="true"><rect
 const mapArt = trailMap();
 app.innerHTML = `<div class="page">
   <header class="mast shell"><button class="brand" data-act="cover" aria-label="山行手记，回到封面"><span class="brand-mark">${worldMark}</span><span class="brand-name">山行手记<small>SHANXING JOURNAL</small></span></button>
-    <div class="audio-controls"><button data-act="music"></button><button data-act="voice"></button></div>
+    <div class="audio-controls"><button class="sound-control" data-act="music"></button><button class="sound-control" data-act="voice"></button><button class="orientation-control" data-act="orientation" aria-pressed="false" aria-label="旋转为横屏布局" title="旋转为横屏布局"><span class="sound-glyph">${icon('landscape',16)}</span></button></div>
   </header>
   <main class="shell">
     <section class="painting" id="painting" data-phase="cover" aria-label="泰山山水动画游历">
@@ -61,6 +67,9 @@ app.innerHTML = `<div class="page">
     <nav class="route" aria-label="登山进度"><div class="route-head"><h2>登山足迹</h2><button class="map-mobile" data-act="map" aria-label="打开路线图">${icon('map',14)} 路线图</button></div>
       <div class="milestones">${stops.map((s,i)=>`<button class="milestone" data-step="${i}" aria-label="前往${s.name}"><i><span></span></i><b>${s.name}</b></button>`).join('')}</div></nav>
   </main>
+  <div class="orientation-intro" id="orientation-intro" role="dialog" aria-modal="true" aria-labelledby="orientation-intro-title" hidden>
+    <div class="orientation-intro-card"><h2 id="orientation-intro-title">横屏看山水更舒展</h2><p>点右上角横屏图标，再将手机横放</p><button type="button" data-act="orientation-dismiss">知道了</button></div>
+  </div>
   </div>
   <div id="dialog-wrap" class="dialog-wrap" hidden><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title"><button class="close" data-act="close" aria-label="关闭">${icon('close',20)}</button><div id="dialog-body"></div></section></div>
   <div id="notice" class="notice" role="status"></div><div id="live" class="sr" aria-live="polite"></div>`;
@@ -73,6 +82,42 @@ const summit = el('summit');
 const dialog = el('dialog-wrap');
 const world = createScrollWorld(el('world'));
 void world.travel(-1, {instant:true});
+
+function setManualLandscape(active: boolean) {
+  const width = window.visualViewport?.width ?? window.innerWidth;
+  const height = window.visualViewport?.height ?? window.innerHeight;
+  manualLandscape = active && width <= height;
+  document.querySelector('.page')?.classList.toggle('manual-landscape', manualLandscape);
+  const button = document.querySelector<HTMLButtonElement>('[data-act="orientation"]')!;
+  const label = manualLandscape ? '恢复竖屏布局' : '旋转为横屏布局';
+  button.innerHTML = `<span class="sound-glyph">${icon(manualLandscape ? 'portrait' : 'landscape', 16)}</span>`;
+  button.setAttribute('aria-pressed', String(manualLandscape));
+  button.setAttribute('aria-label', label);
+  button.title = label;
+  el('live').textContent = manualLandscape ? '已切换为横屏布局。' : '已恢复竖屏布局。';
+  if (manualLandscape) dismissOrientationIntro();
+}
+
+function dismissOrientationIntro() {
+  const intro = el('orientation-intro');
+  intro.hidden = true;
+  document.querySelector('.page')?.classList.remove('orientation-intro-active');
+  const button = document.querySelector<HTMLButtonElement>('[data-act="orientation"]');
+  button?.classList.remove('is-spotlit');
+  button?.removeAttribute('aria-describedby');
+  try { sessionStorage.setItem('taishan-orientation-hint-seen', '1'); } catch { /* Storage may be disabled in embedded browsers. */ }
+}
+
+function showOrientationIntro() {
+  if (!matchMedia('(max-width: 600px) and (orientation: portrait)').matches) return;
+  try { if (sessionStorage.getItem('taishan-orientation-hint-seen') === '1') return; } catch { /* Show the hint when storage is unavailable. */ }
+  el('orientation-intro').hidden = false;
+  document.querySelector('.page')?.classList.add('orientation-intro-active');
+  const button = document.querySelector<HTMLButtonElement>('[data-act="orientation"]');
+  button?.classList.add('is-spotlit');
+  button?.setAttribute('aria-describedby', 'orientation-intro-title');
+  button?.focus({ preventScroll: true });
+}
 
 function toast(message: string) {
   el('notice').textContent = message;
@@ -226,6 +271,16 @@ function credits() {
 app.addEventListener('click', event=>{
   if (!(event.target instanceof Element)) return;
   const target=event.target;
+  const intro = el('orientation-intro');
+  if (!intro.hidden) {
+    const introButton = target.closest<HTMLButtonElement>('button');
+    if (introButton?.dataset.act === 'orientation') {
+      setManualLandscape(!manualLandscape);
+      return;
+    }
+    if (introButton?.dataset.act === 'orientation-dismiss' || target === intro) dismissOrientationIntro();
+    return;
+  }
   if (target===dialog || (dialog.classList.contains('photo-mode') && target===dialog.querySelector('.dialog'))) {closeDialog();return;}
   const button=target.closest<HTMLButtonElement>('button');
   if (!button) {
@@ -249,6 +304,7 @@ app.addEventListener('click', event=>{
       setSoundControls();
       if (button.dataset.act === 'voice' && !sound.voice && opening) completeNarration();
       break;
+    case 'orientation':setManualLandscape(!manualLandscape);break;
     case 'map': if(!moving) mapDialog();break;
     case 'close':closeDialog();break;
     case 'credits':credits();break;
@@ -268,6 +324,21 @@ app.addEventListener('click', event=>{
   }
 });
 document.addEventListener('keydown',event=>{
+  if (!el('orientation-intro').hidden) {
+    if (event.key === 'Escape') dismissOrientationIntro();
+    if (event.key === 'Tab') {
+      const orientation = document.querySelector<HTMLButtonElement>('[data-act="orientation"]');
+      const dismiss = document.querySelector<HTMLButtonElement>('[data-act="orientation-dismiss"]');
+      if (event.shiftKey && document.activeElement === orientation) {
+        event.preventDefault();
+        dismiss?.focus();
+      } else if (!event.shiftKey && document.activeElement === dismiss) {
+        event.preventDefault();
+        orientation?.focus();
+      }
+    }
+    return;
+  }
   if (!dialog.hidden) {
     if(event.key==='Escape') closeDialog();
     if(event.key==='Tab'){
@@ -296,3 +367,4 @@ if(import.meta.hot) import.meta.hot.dispose(()=>{
 });
 setSoundControls();
 updateTrail();
+showOrientationIntro();
