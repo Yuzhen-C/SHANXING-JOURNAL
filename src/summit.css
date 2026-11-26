@@ -1,0 +1,189 @@
+@font-face {
+  font-family: SummitBrush;
+  src: url('../fonts/mashan-summit.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
+.summit-poem {
+  position: absolute;
+  top: max(13%, calc(env(safe-area-inset-top) + 60px));
+  left: max(clamp(24px, 8vw, 160px), env(safe-area-inset-left));
+  margin: 0;
+  color: #1e4037;
+  text-shadow: 0 1px 6px #fff3cff0;
+  pointer-events: none;
+}
+.summit-poem blockquote {
+  margin: 0;
+  font: 400 clamp(31px, 7.8vmin, 75px)/1.17 SummitBrush, KaiTi, serif;
+  letter-spacing: .045em;
+}
+.summit-poem blockquote span {
+  display: block;
+  width: max-content;
+  white-space: nowrap;
+  animation: summit-ink-appears 1.1s ease-out .2s both;
+}
+.summit-poem blockquote span + span {
+  margin-left: .95em;
+  animation-delay: 1s;
+}
+.summit-poem figcaption {
+  margin: .65em .35em 0 0;
+  color: #543d30;
+  text-align: right;
+  font: 600 clamp(12px, 1.65vmin, 16px)/1.5 var(--serif);
+  letter-spacing: .16em;
+  animation: summit-ink-appears .7s ease-out 1.8s both;
+}
+@keyframes summit-ink-appears {
+  from { opacity: 0; transform: translateY(.12em); filter: blur(2px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.summit-award {
+  --summit-ink: #25483e;
+  --summit-gold: #ae8758;
+  position: absolute;
+  left: clamp(22px, 5vw, 80px);
+  bottom: var(--summit-bottom, 66px);
+  width: min(388px, calc(100% - 44px));
+  box-sizing: border-box;
+  padding: 22px 26px 17px;
+  color: var(--summit-ink);
+  border: 1px solid #bba77f;
+  border-radius: 4px;
+  background: linear-gradient(123deg, #faf3e2f7, #f0e8d5f2 72%, #f7efdff2);
+  box-shadow: 0 12px 32px #152e292b, inset 0 0 0 4px #f7f1e1, inset 0 0 0 5px #bead8b8c;
+  pointer-events: auto;
+  cursor: default;
+  text-align: left;
+  animation: award-arrives .75s cubic-bezier(.17,.75,.21,1) 2.55s both;
+}
+
+.summit-award-head { display: flex; align-items: center; gap: 15px; }
+.summit-seal {
+  display: block;
+  width: clamp(67px, 7vw, 90px);
+  flex: none;
+  transform: rotate(-6deg);
+  animation: summit-impression .62s cubic-bezier(.22,.82,.3,1.08) 2.8s both;
+}
+.summit-award-inscription { min-width: 0; }
+.summit-award-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  color: #8d4834;
+  font: 600 11px/1.25 "PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing: .17em;
+}
+.summit-award-label span {
+  width: 18px;
+  height: 1px;
+  background: var(--summit-gold);
+  position: relative;
+}
+.summit-award-label span::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -1.5px;
+  background: var(--summit-gold);
+  width: 4px;
+  height: 4px;
+  transform: rotate(45deg);
+}
+.summit-award h2 {
+  margin: 0;
+  color: #203f34;
+  font: 600 clamp(27px, 3vw, 40px)/1.22 "STKaiti","KaiTi","Songti SC",SimSun,serif;
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+.summit-stats {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  margin: 15px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid #bca98988;
+}
+.summit-stats > div + div { border-left: 1px solid #bca98988; padding-left: 22px; }
+.summit-stats dt { font: 12px/1.4 "PingFang SC","Microsoft YaHei",sans-serif; color: #516457; letter-spacing: .08em; }
+.summit-stats dd {
+  margin: 3px 0 0;
+  font: 27px/1.15 Georgia,"Times New Roman",serif;
+  color: #29483e;
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
+}
+.summit-stats dd span { font-size: .68em; }
+.summit-stats small { font: 12px/1.3 "Songti SC",SimSun,serif; }
+.summit-restart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  margin-top: 14px;
+  padding: 0 17px;
+  border: 1px solid #315549;
+  border-radius: 3px;
+  color: #fff6df;
+  background: var(--summit-ink);
+  font: 500 13px/1.3 "PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.summit-restart:hover { background: #345a4b; }
+.summit-restart:focus-visible { outline: 3px solid #a34733; outline-offset: 3px; }
+@keyframes award-arrives {
+  from { opacity: 0; transform: translateY(14px); visibility: hidden; }
+  to { opacity: 1; transform: translateY(0); visibility: visible; }
+}
+@keyframes summit-impression {
+  0% { opacity: 0; transform: scale(1.18) rotate(-10deg); }
+  35% { opacity: 1; }
+  78% { transform: scale(.97) rotate(-6deg); }
+  100% { transform: scale(1) rotate(-6deg); }
+}
+@media (max-width: 640px) {
+  .summit-poem blockquote { font-size: clamp(31px, 9.2vw, 48px); }
+  .summit-award {
+    left: max(14px, env(safe-area-inset-left));
+    right: max(14px, env(safe-area-inset-right));
+    width: auto;
+    max-width: 366px;
+    margin-inline: auto;
+    padding: 17px 20px 15px;
+    bottom: var(--summit-bottom, max(66px, calc(48px + env(safe-area-inset-bottom))));
+  }
+  .summit-seal { width: clamp(54px, 18vw, 74px); }
+  .summit-award-head { gap: 11px; }
+  .summit-award h2 { font-size: clamp(25px, 7.8vw, 34px); }
+  .summit-stats { margin-top: 12px; padding-top: 10px; }
+  .summit-stats dd { font-size: 24px; }
+  .summit-restart { margin-top: 10px; min-height: 44px; }
+}
+@media (max-height: 600px) and (orientation: landscape) {
+  .summit-poem {
+    left: max(6vw, env(safe-area-inset-left));
+    top: max(20%, calc(env(safe-area-inset-top) + 58px));
+  }
+  .summit-poem blockquote { font-size: clamp(25px, min(6vw, 9vh), 48px); }
+  .summit-award {
+    left: auto;
+    right: max(16px, env(safe-area-inset-right));
+    width: min(43%, 354px);
+    padding: 14px 18px;
+  }
+  .summit-seal { width: 58px; }
+  .summit-stats { margin-top: 9px; padding-top: 7px; }
+  .summit-restart { margin-top: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .summit-poem blockquote span, .summit-poem figcaption,
+  .summit-award, .summit-seal { animation: none; }
+}

@@ -1,0 +1,44 @@
+.mountain-painting {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.mountain-painting .drifting-cloud {
+  animation: tai-cloud 24s ease-in-out infinite alternate;
+}
+
+.mountain-painting .distant-cloud {
+  animation: tai-cloud 37s -12s ease-in-out infinite alternate-reverse;
+}
+
+.mountain-painting .swallows {
+  animation: tai-birds 16s ease-in-out infinite alternate;
+}
+
+.mountain-painting .cable-cabin {
+  animation: tai-cable 13s linear infinite alternate;
+}
+
+@keyframes tai-cloud {
+  from { transform: translateX(-13px); }
+  to { transform: translateX(20px); }
+}
+
+@keyframes tai-birds {
+  from { transform: translate(-4px, 1px); }
+  to { transform: translate(18px, -6px); }
+}
+
+@keyframes tai-cable {
+  from { transform: translate(0, 0); }
+  to { transform: translate(96px, -32px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mountain-painting .drifting-cloud,
+  .mountain-painting .distant-cloud,
+  .mountain-painting .swallows,
+  .mountain-painting .cable-cabin { animation: none; }
+}

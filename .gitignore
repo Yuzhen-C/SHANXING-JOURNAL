@@ -1,0 +1,8 @@
+node_modules/
+dist/
+泰山行记-H5发布包.zip
+.npm-cache/
+.voice-work/
+.env.local
+.env.*.local
+*.log
