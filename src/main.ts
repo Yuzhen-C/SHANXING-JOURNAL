@@ -31,6 +31,18 @@ let dialogTrigger: HTMLElement | null = null;
 let noticeTimer = 0;
 const inkStrip = '<i class="gold-line" aria-hidden="true"></i>';
 
+function syncViewportHeight() {
+  requestAnimationFrame(() => {
+    const height = window.visualViewport?.height ?? window.innerHeight;
+    document.documentElement.style.setProperty('--visual-viewport-height', `${Math.round(height)}px`);
+  });
+}
+
+syncViewportHeight();
+window.addEventListener('resize', syncViewportHeight, { passive: true });
+window.addEventListener('orientationchange', syncViewportHeight, { passive: true });
+window.visualViewport?.addEventListener('resize', syncViewportHeight, { passive: true });
+
 const worldMark = `<svg viewBox="0 0 46 43" fill="none" aria-hidden="true"><rect x="1" y="1" width="44" height="41" rx="3" stroke="currentColor"/><rect x="3.5" y="3.5" width="39" height="36" rx="1" stroke="currentColor" opacity=".52"/><circle cx="30" cy="12" r="3.4" fill="currentColor"/><path d="m7 30 9-13 4 5 7-11 12 19H7Zm6-3 4-6 3 5 6-9 6 10m-4-4 3-3 6 10M9 33h28" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const mapArt = trailMap();
 app.innerHTML = `<div class="page">
@@ -275,6 +287,12 @@ document.addEventListener('visibilitychange',()=>{
 });
 window.addEventListener('pagehide',()=>sound.suspend());
 window.addEventListener('pageshow',()=>{ sound.resume(); continueJourney(); });
-if(import.meta.hot) import.meta.hot.dispose(()=>{world.destroy();sound.suspend();});
+if(import.meta.hot) import.meta.hot.dispose(()=>{
+  world.destroy();
+  sound.suspend();
+  window.removeEventListener('resize', syncViewportHeight);
+  window.removeEventListener('orientationchange', syncViewportHeight);
+  window.visualViewport?.removeEventListener('resize', syncViewportHeight);
+});
 setSoundControls();
 updateTrail();
