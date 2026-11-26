@@ -112,7 +112,7 @@ function showNote(i: number) {
   const stop = stops[i]!;
   const photo = photoCredits[stop.key]!;
   note.innerHTML = `<article class="station-window" aria-label="${stop.name}实景小窗">
-    <div class="window-edging"></div><div class="field-photo"><img src="${base}${photo.file}" style="object-position:${photo.position ?? '50% 50%'}" alt="${photo.alt}"><span>${icon('photo',12)} 实景</span></div>
+    <div class="window-edging"></div><button class="field-photo" type="button" data-act="photo" aria-label="查看${stop.name}实景大图"><img src="${base}${photo.file}" style="object-position:${photo.position ?? '50% 50%'}" alt="${photo.alt}"><span>${icon('photo',12)} 实景 · 放大</span></button>
     <div class="field-text"><div class="field-order">第${chapterNames[i]}景 <i></i> ${stop.segment}</div><h2>${stop.name}</h2><p>${snippets[i]}</p></div>
     <div class="field-actions"><button data-act="script">${icon('voice',15)} 讲解词</button><button class="primary small" data-act="next">${i === total-1 ? '登顶远眺' : '下一景'} ${icon('arrow',16)}</button></div>
   </article>`;
@@ -183,15 +183,19 @@ function next() {
   }
   void go(current+1);
 }
-function showDialog(html: string) {
+function showDialog(html: string, variant: 'photo' | 'default' = 'default') {
   dialogTrigger=document.activeElement instanceof HTMLElement ? document.activeElement : null;
   el('dialog-body').innerHTML=html;
+  dialog.classList.toggle('photo-mode', variant === 'photo');
+  dialog.querySelector('.dialog')?.classList.toggle('photo-dialog', variant === 'photo');
   dialog.hidden=false;
   document.body.classList.add('no-scroll');
   dialog.querySelector<HTMLButtonElement>('.close')!.focus();
 }
 function closeDialog(allowFinish = true) {
   dialog.hidden=true;
+  dialog.classList.remove('photo-mode');
+  dialog.querySelector('.dialog')?.classList.remove('photo-dialog');
   document.body.classList.remove('no-scroll');
   dialogTrigger?.focus();
   if (allowFinish) continueJourney();
@@ -210,7 +214,7 @@ function credits() {
 app.addEventListener('click', event=>{
   if (!(event.target instanceof Element)) return;
   const target=event.target;
-  if (target===dialog) {closeDialog();return;}
+  if (target===dialog || (dialog.classList.contains('photo-mode') && target===dialog.querySelector('.dialog'))) {closeDialog();return;}
   const button=target.closest<HTMLButtonElement>('button');
   if (!button) {
     if (scene.contains(target) && dialog.hidden && !summit.contains(target) && !window.getSelection()?.toString()) next();
@@ -236,6 +240,13 @@ app.addEventListener('click', event=>{
     case 'map': if(!moving) mapDialog();break;
     case 'close':closeDialog();break;
     case 'credits':credits();break;
+    case 'photo': {
+      const stop=stops[current];
+      if (!stop || moving) break;
+      const photo=photoCredits[stop.key]!;
+      showDialog(`<h2 id="dialog-title" class="sr">${stop.name}实景大图</h2><figure class="photo-lightbox"><img src="${base}${photo.file}" style="object-position:${photo.position ?? '50% 50%'}" alt="${photo.alt}"><figcaption>${stop.name} · 实景照片</figcaption></figure>`, 'photo');
+      break;
+    }
     case 'script': {
       const s=stops[current];
       if (!s || moving) break;

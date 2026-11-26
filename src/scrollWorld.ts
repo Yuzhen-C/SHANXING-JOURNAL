@@ -422,7 +422,10 @@ export function createScrollWorld(host:HTMLElement): {travel(to:number, options?
 
   function travellingPose(index:number):Camera{
     if(index===-1)return {x:-62-wide*(w/base*.18),y:101,zoom:1.13};
-    if(index===7)return {x:3010-wide*w/base*.08,y:-412,zoom:.49};
+    if(index===7){
+      const portrait=w/h<.82;
+      return {x:3010-wide*w/base*.08,y:portrait?-390:-412,zoom:portrait?.36:.49};
+    }
     const stop=stops[index]!;
     return {x:stop.x-(.073+wide*.09)*w/base,y:stop.y+(.09+wide*.014)*h/base,zoom:1.03};
   }
